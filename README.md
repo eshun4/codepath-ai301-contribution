@@ -73,3 +73,36 @@ This confirmed that the new Unix socket parsing regression test passes and that 
 My plan is to add a unit test for `pwndbg.lib.net.unix()` covering the Unit socket parsing case where the socket path contains a carriage return (`\r`). The test should help me verify that the parser does not incorrectly split the socket entry into multiple lines, and that also it correctly preserves the path and parses the inode. 
 
 I will start off by looking for the preferred unit test location and existing test patterns in `tests/unit_tests/`, then add the smallest possible test for this behavior. 
+
+## Phase IV: Submit & Iterate
+
+### Pull Request
+
+PR Link: https://github.com/pwndbg/pwndbg/pull/3993
+
+### PR Summary
+
+I submitted a pull request to `pwndbg/pwndbg` adding a focused regression test for `pwndbg.lib.net.unix()`. The test verifies that Unix socket paths containing a carriage return (`\r`) are preserved correctly and are not split into multiple socket entries.
+
+### Testing
+
+I ran the project unit test script:
+
+```bash
+./unit-tests.sh tests/unit_tests/test_net.py -k unix
+```
+
+Result:
+
+```text
+68 passed, 4 skipped
+```
+
+### Maintainer Feedback / Next Steps
+
+The PR has been submitted and is currently awaiting maintainer review. If maintainers request changes, I will update the branch, push a follow-up commit, and document the feedback here.
+
+### Status
+
+Awaiting review
+
