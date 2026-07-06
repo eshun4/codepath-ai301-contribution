@@ -104,5 +104,28 @@ The PR has been submitted and is currently awaiting maintainer review. If mainta
 
 ### Status
 
-Awaiting review
+Maintainer Feedback / Next Steps
 
+Maintainer @disconnect3d reviewed the PR and requested changes. He pointed out that while my test covered \r preservation, socket paths can also contain \n characters — and because the parser splits on \n, such paths break the line-based parsing entirely. He asked me to extend the test to cover a path containing both \r and \n, and to fix the underlying bug. He suggested an approach: when the parser encounters an unparsable line, treat it as a continuation of the previous entry's path.
+How I Responded
+
+First, I wrote a test feeding a multi-line path into the parser and confirmed it crashed with an IndexError — reproducing the bug the maintainer described.
+I initially reverted to a valid-input-only test, but realized this sidestepped the review: the maintainer had asked for a fix, not just an acknowledgment. I went back and implemented the fix properly.
+
+I added a `_is_unix_entry() helper to pwndbg/lib/net.py that validates whether a line matches the expected /proc/net/unix entry format (hex slot number ending with :, five hex fields, decimal inode). Lines that fail validation are appended to the previous socket's path with the \n restored.
+I extended the tests to cover: a path containing both `\r` and `\n` spanning multiple lines, a pathless (anonymous) entry following it, and empty input.
+
+Debugging Notes
+
+Getting to green took several iterations, mostly due to transcription errors I introduced while editing (fields[1:16] instead of fields[1:6], a missing `prev_had_path` assignment, typos in test assertions). Each failure's traceback pointed at the cause. Key lessons: read git diff line-by-line before running tests, and test failures that share a pattern (e.g., "only entries with paths fail") point at a single root cause. I also learned that UnixSocket.path defaults to "(anonymous)" rather than None, which required using a flag (prev_had_path) instead of checking the attribute — you can't distinguish a pathless entry from the attribute alone.
+
+Known Limitation
+Entry detection is a heuristic: the kernel writes socket paths verbatim with no escaping, so a path fragment could theoretically mimic a valid entry line. I noted this in my reply to the maintainer.
+
+Testing
+`./unit-tests.sh tests/unit_tests/test_net.py`
+
+Result: `71 passed, 4 skipped`
+
+Status
+Fix and tests pushed; rebased on upstream dev; re-requested review from @disconnect3d.
