@@ -132,3 +132,31 @@ Fix and tests pushed; rebased on upstream dev; re-requested review from @disconn
 
 First PR Approved and Merged.
 The maintainer reviewed the code, approved my Pull request and merged my changes.
+
+
+## Selected Issue #2
+
+https://github.com/vineethwilson15/codemind/issues/31
+
+## Project
+
+CodeMind
+
+## Issue Summary
+
+This issue focuses on adding integration tests for the `RepoIndexer` in `core/indexer/`. The tests will run against real Neo4j and Qdrant containers rather than mocked database services.
+
+The integration test should index a small synthetic repository, verify that a corresponding `File` node is created in Neo4j, confirm that a vector is stored in Qdrant, and remove all test data during teardown.
+
+## Why I Chose This Issue
+
+I chose this issue because it has a clear and manageable scope while allowing me to gain practical experience with integration testing, Docker containers, Neo4j, Qdrant, and pytest.
+
+The project already has unit tests for the indexer, so this contribution provides a focused opportunity to test how the complete indexing workflow behaves when connected to real database services.
+
+My first step will be to study the existing `RepoIndexer` implementation, unit tests, Docker configuration, and contribution guidelines. I will then reproduce the current indexing workflow locally and develop an integration test that verifies data is written correctly to both Neo4j and Qdrant.
+
+## Current Phase
+
+Phase I: Issue Selection
+
